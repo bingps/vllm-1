@@ -90,6 +90,11 @@ class EngineCore:
         """Add request to the scheduler."""
 
         if request.mm_hashes is not None:
+            # Here, if hash exists for an image, then it will be fetched
+            # from the cache, else it will be added to the cache.
+            # Note that the cache here is mirrored with the client side of the
+            # MM mapper, so anything that has a hash must have a HIT cache
+            # entry here as well.
             request.mm_inputs = self.mm_input_mapper_server.process_inputs(
                 request.mm_inputs, request.mm_hashes)
 

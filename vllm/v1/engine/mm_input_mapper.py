@@ -44,17 +44,15 @@ class MMInputMapperClient:
 
         self.mm_cache = LRUDictCache(MM_CACHE_SIZE)
 
-        # Set to None to disable (TODO: Disable!)
-        self.mm_debug_cache_hit_ratio_steps = 32
+        # DEBUG: Set to None to disable
+        self.mm_debug_cache_hit_ratio_steps = None
         self.mm_cache_hits = 0
-        self.mm_cache_misses = 0
+        self.mm_cache_total = 0
 
     def cache_hit_ratio(self, steps) -> float:
-        total_steps = self.mm_cache_hits + self.mm_cache_misses
-
-        if total_steps > 0 and total_steps % steps == 0:
+        if self.mm_cache_total > 0 and self.mm_cache_total % steps == 0:
             logger.debug("MMInputMapper: cache_hit_ratio = %.2f",
-                         self.mm_cache_hits / total_steps)
+                         self.mm_cache_hits / self.mm_cache_total)
 
     def process_inputs(
         self,
@@ -93,8 +91,8 @@ class MMInputMapperClient:
                 mm_hash = mm_hashes[input_id]
                 mm_input = self.mm_cache.get(mm_hash)
 
+            self.mm_cache_total += 1
             if mm_input is None:
-                self.mm_cache_misses += 1
                 if precomputed_mm_inputs is not None:
                     # Reuse precomputed input (for merged preprocessor)
                     mm_input = precomputed_mm_inputs[input_id]

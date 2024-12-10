@@ -1,6 +1,6 @@
+from collections import OrderedDict
 from contextlib import contextmanager
 from typing import Any, Generic, Iterator, List, TypeVar, overload
-from collections import OrderedDict
 
 import zmq
 
